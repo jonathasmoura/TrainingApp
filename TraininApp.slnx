@@ -1,0 +1,6 @@
+<Solution>
+  <Project Path="TraininApp.API/TraininApp.API.csproj" Id="c8fca6c1-b8df-4962-840e-85a913c69398" />
+  <Project Path="TraininApp.Application/TraininApp.Application.csproj" Id="6451d22e-28ba-4919-9bd0-440d62302b3b" />
+  <Project Path="TraininApp.Domain/TraininApp.Domain.csproj" Id="61aa0ae4-986e-4991-a570-4dc4ce2743ef" />
+  <Project Path="TraininApp.Infrastructure/TraininApp.Infrastructure.csproj" Id="e6c18dad-2e10-41a7-afd0-d90ca66542c0" />
+</Solution>
