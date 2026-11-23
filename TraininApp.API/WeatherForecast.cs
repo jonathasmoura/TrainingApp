@@ -11,3 +11,4 @@ namespace TraininApp.API
 		public string? Summary { get; set; }
 	}
 }
+

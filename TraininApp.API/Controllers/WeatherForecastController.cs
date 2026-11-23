@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Http.Metadata;
 
 namespace TraininApp.API.Controllers
 {
@@ -12,6 +13,8 @@ namespace TraininApp.API.Controllers
 		];
 
 		[HttpGet(Name = "GetWeatherForecast")]
+		[EndpointSummary("Obter previsão do tempo")]
+		[EndpointDescription("Retorna dados de previsão do tempo para os próximos dias.")]
 		public IEnumerable<WeatherForecast> Get()
 		{
 			return Enumerable.Range(1, 5).Select(index => new WeatherForecast
@@ -24,3 +27,4 @@ namespace TraininApp.API.Controllers
 		}
 	}
 }
+
