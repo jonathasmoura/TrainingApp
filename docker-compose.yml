@@ -4,7 +4,7 @@ services:
     container_name: traininapp-sqlserver
     environment:
       ACCEPT_EULA: "Y"
-      MSSQL_SA_PASSWORD: "${MSSQL_SA_PASSWORD:-TraininApp!SqlServer2026}"
+      MSSQL_SA_PASSWORD: "${MSSQL_SA_PASSWORD:?MSSQL_SA_PASSWORD must be set in the environment or .env file}"
     ports:
       - "1433:1433"
     volumes:
@@ -26,8 +26,8 @@ services:
         condition: service_healthy
     environment:
       ASPNETCORE_ENVIRONMENT: Production
-      ConnectionStrings__DefaultConnection: "Server=sqlserver,1433;Database=TraininApp;User Id=sa;Password=${MSSQL_SA_PASSWORD:-TraininApp!SqlServer2026};TrustServerCertificate=True;MultipleActiveResultSets=true"
-      Jwt__Key: "${JWT_KEY:-REMOVIDO}"
+      ConnectionStrings__DefaultConnection: "Server=sqlserver,1433;Database=TraininApp;User Id=sa;Password=${MSSQL_SA_PASSWORD:?MSSQL_SA_PASSWORD must be set in the environment or .env file};TrustServerCertificate=True;MultipleActiveResultSets=true"
+      Jwt__Key: "${JWT_KEY:?JWT_KEY must be set in the environment or .env file}"
       Jwt__Issuer: "TraininApp.API"
       Jwt__Audience: "TraininApp.Client"
       Jwt__ExpirationMinutes: "60"
