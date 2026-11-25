@@ -5,7 +5,7 @@ using TraininApp.Domain.Services;
 
 namespace TraininApp.Application.Features.Installments;
 
-public sealed class SettleInstallmentHandler(IInstallmentRepository installments, IUnitOfWork unitOfWork, IEnrollmentDomainService service, IPaymentNotifier notifier) : ICommandHandler<SettleInstallmentCommand, Result>
+public sealed class SettleInstallmentHandler(IInstallmentRepository installments, IUnitOfWork unitOfWork, IEnrollmentDomainService service, IPaymentNotifier notifier, ITimelineService timelineService) : ICommandHandler<SettleInstallmentCommand, Result>
 {
 	public async Task<Result> Handle(SettleInstallmentCommand command, CancellationToken cancellationToken)
 	{
@@ -14,6 +14,7 @@ public sealed class SettleInstallmentHandler(IInstallmentRepository installments
 		service.SettleInstallment(installment, command.PaymentMethod);
 		await unitOfWork.SaveChangesAsync(cancellationToken);
 		await notifier.NotifyAsync(installment.EnrollmentId, installment.Id, cancellationToken);
+		await timelineService.AddInstallmentPaidAsync(installment.Enrollment.MemberId, installment.Id, cancellationToken);
 		return Result.Success();
 	}
 }

@@ -8,6 +8,7 @@ public sealed class Installment : BaseEntity
 	private Installment() { }
 	public Installment(Guid enrollmentId, int installmentNumber, DateOnly dueDate, decimal amount) { EnrollmentId = enrollmentId; InstallmentNumber = installmentNumber; DueDate = dueDate; Amount = amount; Status = EInstallmentStatus.Pending; }
 	public Guid EnrollmentId { get; private set; }
+	public Enrollment Enrollment { get; private set; } = null!;
 	public int InstallmentNumber { get; private set; }
 	public DateOnly DueDate { get; private set; }
 	public decimal Amount { get; private set; }

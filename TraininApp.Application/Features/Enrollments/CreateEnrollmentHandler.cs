@@ -5,7 +5,7 @@ using TraininApp.Domain.Services;
 
 namespace TraininApp.Application.Features.Enrollments;
 
-public sealed class CreateEnrollmentHandler(IMemberRepository members, IPlanRepository plans, IEnrollmentRepository enrollments, IUnitOfWork unitOfWork, IEnrollmentDomainService service) : ICommandHandler<CreateEnrollmentCommand, Result<Guid>>
+public sealed class CreateEnrollmentHandler(IMemberRepository members, IPlanRepository plans, IEnrollmentRepository enrollments, IUnitOfWork unitOfWork, IEnrollmentDomainService service, ITimelineService timelineService) : ICommandHandler<CreateEnrollmentCommand, Result<Guid>>
 {
 	public async Task<Result<Guid>> Handle(CreateEnrollmentCommand command, CancellationToken cancellationToken)
 	{
@@ -15,6 +15,7 @@ public sealed class CreateEnrollmentHandler(IMemberRepository members, IPlanRepo
 		var enrollment = service.GenerateNewEnrollment(member, plan, command.StartDate);
 		enrollments.Add(enrollment);
 		await unitOfWork.SaveChangesAsync(cancellationToken);
+		await timelineService.AddEnrollmentCreatedAsync(enrollment.MemberId, enrollment.Id, cancellationToken);
 		return Result<Guid>.Success(enrollment.Id);
 	}
 }

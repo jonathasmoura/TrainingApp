@@ -16,25 +16,25 @@ public static class DependencyInjection
 {
 	public static IServiceCollection AddInfrastructure(this IServiceCollection services, IConfiguration configuration)
 	{
-		services.AddDbContext<AcademyDbContext>(options => options.UseSqlServer(configuration.GetConnectionString("DefaultConnection")));
-		services.Configure<JwtOptions>(configuration.GetSection(JwtOptions.SectionName));
-		services.AddIdentityCore<ApplicationUser>(options =>
-		{
-			options.User.RequireUniqueEmail = true;
-			options.Password.RequiredLength = 8;
-			options.Password.RequireNonAlphanumeric = true;
-		}).AddRoles<Microsoft.AspNetCore.Identity.IdentityRole<Guid>>().AddEntityFrameworkStores<AcademyDbContext>();
+		var connectionString = configuration.GetConnectionString("DefaultConnection");
+		if (string.IsNullOrWhiteSpace(connectionString)) throw new InvalidOperationException("ConnectionStrings:DefaultConnection must be configured through User Secrets or an environment secret.");
+		services.AddDbContext<AcademyDbContext>(options => options.UseSqlServer(connectionString));
+		services.AddSecurity(configuration);
 		services.AddDistributedMemoryCache();
 		services.AddScoped<IUnitOfWork, UnitOfWork>();
+		services.AddScoped<DatabaseSeeder>();
 		services.AddScoped<IReadOnlyAcademyContext>(sp => sp.GetRequiredService<AcademyDbContext>());
 		services.AddScoped<IMemberRepository, MemberRepository>(); services.AddScoped<IProfessionalRepository, ProfessionalRepository>(); services.AddScoped<IExerciseRepository, ExerciseRepository>(); services.AddScoped<IPlanRepository, PlanRepository>(); services.AddScoped<IEnrollmentRepository, EnrollmentRepository>(); services.AddScoped<IInstallmentRepository, InstallmentRepository>(); services.AddScoped<IWorkoutPlanRepository, WorkoutPlanRepository>();
 		services.AddScoped<IEnrollmentDomainService, EnrollmentDomainService>(); services.AddScoped<IWorkoutPlanDomainService, WorkoutPlanDomainService>();
 		services.AddSingleton<ITokenBlacklistService, TokenBlacklistService>(); services.AddSingleton<IIdempotencyService, IdempotencyService>(); services.AddScoped<IPaymentNotifier, NullPaymentNotifier>();
 		services.AddScoped<ITokenService, JwtTokenService>();
+		services.AddScoped<IIdentityService, IdentityService>();
+		services.AddScoped<IPasswordResetEmailSender, PasswordResetEmailSender>();
 		services.AddScoped<IDispatcher, Dispatcher>();
 		var application = typeof(TraininApp.Application.Features.Members.ListMembersQuery).Assembly;
 		services.AddMediatRLike(application);
 		services.AddValidatorsFromAssembly(application);
+		services.AddScoped<ITimelineService, TimelineService>();
 		return services;
 	}
 	private static IServiceCollection AddMediatRLike(this IServiceCollection services, System.Reflection.Assembly assembly)

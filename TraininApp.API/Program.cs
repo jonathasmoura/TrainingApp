@@ -1,8 +1,9 @@
 using Microsoft.OpenApi;
-using TraininApp.API.Configuration;
+using System.Reflection;
 using TraininApp.API.Realtime;
 using TraininApp.API.Swagger;
 using TraininApp.Infrastructure;
+using TraininApp.Infrastructure.Persistence;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -11,6 +12,7 @@ builder.Services.AddControllers();
 builder.Services.AddOpenApi();
 builder.Services.AddSwaggerGen(options =>
 {
+    options.IncludeXmlComments(Path.Combine(AppContext.BaseDirectory, $"{Assembly.GetExecutingAssembly().GetName().Name}.xml"));
     options.DocumentFilter<TagDescriptionsDocumentFilter>();
 
     var definitions = new[]
@@ -22,7 +24,8 @@ builder.Services.AddSwaggerGen(options =>
         (Name: "enrollments", Title: "Matrículas"),
         (Name: "exercises", Title: "Exercícios"),
         (Name: "installments", Title: "Parcelas"),
-        (Name: "workout-plans", Title: "Fichas de treino")
+        (Name: "workout-plans", Title: "Fichas de treino"),
+        (Name: "timeline", Title: "Timeline")
     };
 
     foreach (var definition in definitions)
@@ -37,6 +40,7 @@ builder.Services.AddSwaggerGen(options =>
             "exercises" => "Funcionalidades de cadastro, consulta, atualização e exclusão dos exercícios de treinamento.",
             "installments" => "Funcionalidades de consulta de parcelas pendentes e registro de pagamentos.",
             "workout-plans" => "Funcionalidades de criação, consulta e atualização das fichas de treino dos membros.",
+            "timeline" => "Histórico de atividades relacionadas a membros e profissionais, incluindo matrículas, fichas de treino e pagamentos.",
             _ => "Funcionalidades da aplicação de gerenciamento da academia."
         };
 
@@ -75,10 +79,13 @@ builder.Services.AddSwaggerGen(options =>
 });
 builder.Services.AddSignalR();
 builder.Services.AddInfrastructure(builder.Configuration);
-builder.Services.AddJwtAuthentication(builder.Configuration);
-builder.Services.AddAuthorization();
 
 var app = builder.Build();
+
+await using (var scope = app.Services.CreateAsyncScope())
+{
+    await scope.ServiceProvider.GetRequiredService<DatabaseSeeder>().SeedAsync();
+}
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
@@ -95,6 +102,7 @@ if (app.Environment.IsDevelopment())
         options.SwaggerEndpoint("/swagger/exercises/swagger.json", "Exercícios");
         options.SwaggerEndpoint("/swagger/installments/swagger.json", "Parcelas");
         options.SwaggerEndpoint("/swagger/workout-plans/swagger.json", "Fichas de treino");
+        options.SwaggerEndpoint("/swagger/timeline/swagger.json", "Timeline");
     });
 }
 

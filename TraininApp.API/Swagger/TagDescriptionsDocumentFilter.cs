@@ -15,7 +15,8 @@ public sealed class TagDescriptionsDocumentFilter : IDocumentFilter
 			["Enrollments"] = "Gerencia as matrículas dos membros, incluindo a criação, a alteração do plano e o cancelamento.",
 			["Exercises"] = "Gerencia o cadastro, a consulta, a atualização e a exclusão dos exercícios de treinamento.",
 			["Installments"] = "Gerencia a consulta das parcelas pendentes e o registro de pagamentos.",
-			["WorkoutPlans"] = "Gerencia a criação, a consulta e a atualização das fichas de treino dos membros."
+			["WorkoutPlans"] = "Gerencia a criação, a consulta e a atualização das fichas de treino dos membros.",
+			["Timeline"] = "Histórico de atividades relacionadas a membros e profissionais, incluindo matrículas, fichas de treino e pagamentos."
 		};
 
 	public void Apply(OpenApiDocument swaggerDoc, DocumentFilterContext context)
